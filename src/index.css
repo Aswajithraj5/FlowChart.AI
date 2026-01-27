@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --color-background: #030712;
+  /* gray-950 */
+  --color-foreground: #f9fafb;
+  /* gray-50 */
+}
+
+/* Custom premium styles if needed */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
