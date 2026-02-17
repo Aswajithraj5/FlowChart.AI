@@ -31,7 +31,7 @@ const features = [
     {
         icon: Globe,
         title: "Accessible Anywhere",
-        description: "Cloud-based AI infrastructure means you get premium performance on any device."
+        description: "Cloud-based AI infrastructure means you get top-tier performance on any device."
     }
 ];
 
@@ -63,11 +63,11 @@ export const FeaturesView: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        whileHover={{ y: -5 }}
-                        className="p-8 rounded-2xl bg-gray-900/50 border border-white/5 hover:border-blue-500/30 transition-all group"
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className="p-8 rounded-2xl glass-card transition-all duration-300 group cursor-default"
                     >
-                        <div className="w-12 h-12 bg-blue-600/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-blue-600/20 transition-colors">
-                            <feature.icon className="w-6 h-6 text-blue-500" />
+                        <div className="w-12 h-12 bg-emerald-600/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-emerald-600/20 transition-colors">
+                            <feature.icon className="w-6 h-6 text-emerald-500" />
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                         <p className="text-gray-400 leading-relaxed">

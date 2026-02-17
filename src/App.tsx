@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { UserInfoModal, type UserData } from './components/core/UserInfoModal';
 import { Layout } from './components/layout/Layout';
-import { Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CodeInput } from './components/core/CodeInput';
 import { ResultDisplay } from './components/core/ResultDisplay';
@@ -23,24 +22,18 @@ function App() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-  // Free tier usage tracking
-  const [usageCount, setUsageCount] = useState(() => {
-    return parseInt(localStorage.getItem('flowchart_usage_count') || '0', 10);
-  });
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem('flowchart_user_token') !== null;
+  const [generationsCount, setGenerationsCount] = useState<number>(() => {
+    return parseInt(localStorage.getItem('flowchart_generations_count') || '0');
   });
 
   const [username, setUsername] = useState<string | null>(() => {
     return localStorage.getItem('flowchart_username');
   });
 
-  const MAX_FREE_USAGE = 3;
 
   // Listener for nested navigation (e.g. from HowItWorksView)
   useEffect(() => {
-    const handleNavigate = (_e: any) => {
+    const handleNavigate = () => {
       setCurrentView('home');
     };
     window.addEventListener('navigate-home', handleNavigate);
@@ -48,11 +41,11 @@ function App() {
   }, []);
 
   const handleGenerate = async () => {
-    // Check usage limit
-    if (!isLoggedIn && usageCount >= MAX_FREE_USAGE) {
+    // Check usage limits if not logged in
+    if (!username && generationsCount >= 3) {
       triggerAuth(
-        "Free Limit Reached",
-        `You have used your ${MAX_FREE_USAGE} free generations. Please sign in to continue creating flowcharts.`
+        'Usage Limit Reached',
+        'You\'ve used your 3 free generations. Sign in to continue generating unlimited flowcharts!'
       );
       return;
     }
@@ -63,11 +56,12 @@ function App() {
       const data = await generateContent(code);
       setResults(data);
 
-      // Increment usage count for non-logged users (or all users if you want to track total usage)
-      if (!isLoggedIn) {
-        const newCount = usageCount + 1;
-        setUsageCount(newCount);
-        localStorage.setItem('flowchart_usage_count', newCount.toString());
+      // Increment count ONLY for non-logged in users or track regardless?
+      // Assuming 3 free total for guest, then login.
+      if (!username) {
+        const newCount = generationsCount + 1;
+        setGenerationsCount(newCount);
+        localStorage.setItem('flowchart_generations_count', newCount.toString());
       }
     } catch (err) {
       console.error(err);
@@ -79,7 +73,7 @@ function App() {
 
   const [authModalConfig, setAuthModalConfig] = useState({
     title: 'Get Started',
-    description: 'Sign in to save your flowcharts and get unlimited generations.'
+    description: 'Sign in to save your flowcharts.'
   });
 
   const handleLogin = async (data: UserData) => {
@@ -106,18 +100,17 @@ function App() {
       // Simulate login persistence
       localStorage.setItem('flowchart_user_token', 'dummy-token');
       localStorage.setItem('flowchart_username', data.name);
-      setIsLoggedIn(true);
       setUsername(data.name);
       setShowAuthModal(false);
 
-      toast.success(`Welcome ${data.name}! You now have unlimited generations.`);
+      toast.success(`Welcome ${data.name}!`);
     } catch (err) {
       console.error('Submission error:', err);
       toast.error('Something went wrong. Please try again.');
     }
   };
 
-  const triggerAuth = (title = 'Get Started', description = 'Sign in to save your flowcharts and get unlimited generations.') => {
+  const triggerAuth = (title = 'Get Started', description = 'Sign in to save your flowcharts.') => {
     setAuthModalConfig({ title, description });
     setShowAuthModal(true);
   };
@@ -140,9 +133,9 @@ function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-800 text-blue-300 text-xs font-medium mb-6"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold mb-8 backdrop-blur-xl shadow-lg shadow-blue-500/5 hover:bg-blue-500/20 transition-all duration-300"
               >
-                <Sparkles className="w-3 h-3" />
+                <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
                 <span>Powered by Google Gemini</span>
               </motion.div>
 
@@ -234,7 +227,6 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('flowchart_user_token');
     localStorage.removeItem('flowchart_username');
-    setIsLoggedIn(false);
     setUsername(null);
   };
 

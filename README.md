@@ -10,7 +10,6 @@ Turns your code into clear, visual flowcharts instantly using AI.
 *   **AI-Powered Explanations:** Get step-by-step algorithms and pseudocode alongside your diagrams.
 *   **Interactive Editor:** Edit the generated results, copy them, or fix formatting with one click.
 *   **Premium UI:** A modern, dark-themed interface built with React, Tailwind CSS, and Framer Motion.
-*   **Free Tier:** Try it out with 3 free generations before signing up.
 *   **Secure Auth (Simulated):** User registration via Google Forms integration (no backend database required).
 
 ## 🛠️ Tech Stack

@@ -18,7 +18,7 @@ export const generateContent = async (sourceCode: string): Promise<AIResponse> =
 
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         generationConfig: { responseMimeType: "application/json" }
     });
 
@@ -28,11 +28,13 @@ export const generateContent = async (sourceCode: string): Promise<AIResponse> =
 
     1. A Mermaid.js flowchart syntax (graph TD).
        - Start: "graph TD".
-       - Start/End Nodes: REQUIRED: Use stadium syntax for Start/End: id(["Start"]), id(["End"]). Do NOT use rounded rect ( ).
-       - Input/Output: Use parallelogram shape [/Input/], [/Output/].
-       - Decisions: Use rhombus shape {Condition?}.
-       - Processes: Use rectangular box [Process].
-       - QUOTES: Put quotes around ALL text labels. Example: id1["Start"] --> id2["Input X"]
+       - Start/End Nodes: REQUIRED: Use stadium syntax for Start/End: id(["Start"]), id(["End"]).
+       - Input/Output Operations (print, input, read, write, console.log): MUST use parallelogram shape ONLY: id[/ "Content" /].
+       - CRITICAL: For I/O nodes, DO NOT include the keywords "print", "input", or "console.log" inside the node. Only the content or variable.
+       - Correct Example: print("Hello World") -> node1[/ "Hello World" /]
+       - Decisions (if/else, while, for loops): Use rhombus shape: id{ "Condition?" }.
+       - Processes (assignments, math, operations): Use rectangular box: id[ "Process" ].
+       - QUOTES: Put double quotes around ALL text labels.
        - Edges: Label decision branches with |Yes| or |No|.
 
     2. A step-by-step algorithm in plain English.
@@ -66,7 +68,10 @@ export const generateContent = async (sourceCode: string): Promise<AIResponse> =
 
         const json = JSON.parse(cleanedText) as AIResponse;
         return json;
-    } catch (error) {
+    } catch (error: unknown) {
+        if (error instanceof Error && error.message?.includes('429')) {
+            throw new Error('You have hit the Gemini Free Tier limit. Please wait about 60 seconds and try again. If you need more, consider high-tier billing at ai.google.dev.');
+        }
         console.error('AI Generation Error:', error);
         throw error;
     }

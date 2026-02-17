@@ -44,12 +44,12 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
             const fixed = results.algorithm
                 // Split by newline OR by a digit-dot/paren followed by space that is preceded by whitespace
                 // Examples to catch: "1. Start 2. End" -> ["1. Start", "2. End"]
-                .split(/(?:\r?\n)|(?:\s+(?=\d+[\.|)]\s))/)
+                .split(/(?:\r?\n)|(?:\s+(?=\d+[.|)]\s))/)
                 .map(line => line.trim())
                 .filter(line => line.length > 0)
                 .map((line, index) => {
                     // Remove existing numbering if present at start of line
-                    const cleanLine = line.replace(/^\d+[\).]\s*/, '');
+                    const cleanLine = line.replace(/^\d+[.)]\s*/, '');
                     return `${index + 1}. ${cleanLine}`;
                 })
                 .join('\n');
@@ -89,7 +89,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
     const FixButton = () => (
         <button
             onClick={handleFix}
-            className="absolute top-4 right-14 p-2 z-10 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200 text-gray-500 hover:text-blue-600 transition-colors shadow-sm"
+            className="absolute top-4 right-14 p-2 z-10 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 text-gray-400 hover:text-blue-400 transition-colors shadow-sm"
             title="Auto-Format / Align"
         >
             <Sparkles className="w-4 h-4" />
@@ -98,13 +98,13 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
 
     if (!results) {
         return (
-            <div className="h-full bg-white rounded-2xl border border-gray-200 flex items-center justify-center min-h-[400px] shadow-sm">
+            <div className="h-full glass-card rounded-2xl flex items-center justify-center min-h-[400px] shadow-sm">
                 <div className="text-center p-8">
-                    <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600">
+                    <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-400 border border-blue-500/20">
                         <Network className="w-8 h-8" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Ready to Visualize</h3>
-                    <p className="text-gray-500 max-w-sm">
+                    <h3 className="text-lg font-medium text-white mb-2">Ready to Visualize</h3>
+                    <p className="text-gray-400 max-w-sm">
                         Enter your code on the left and click "Generate" to create flowcharts, algorithms, and pseudocode.
                     </p>
                 </div>
@@ -119,23 +119,18 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
     ] as const;
 
     return (
-        <div className="flex flex-col h-full bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xl">
-            <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
+        <div className="flex flex-col h-full glass-card rounded-2xl overflow-hidden shadow-2xl transition-all duration-300">
+            <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex gap-2">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => {
-                                setActiveTab(tab.id);
-                                if (tab.id !== 'flowchart') {
-                                    // No specific logic needed here after removing setIsEditingFlowchart
-                                }
-                            }}
+                            onClick={() => setActiveTab(tab.id)}
                             className={clsx(
-                                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200",
                                 activeTab === tab.id
-                                    ? "bg-white text-blue-600 shadow-sm border border-gray-200"
-                                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200/50"
+                                    ? "bg-blue-600/20 text-blue-400 shadow-sm border border-blue-500/30"
+                                    : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                             )}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -154,7 +149,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
                 </div>
             </div>
 
-            <div className="flex-1 bg-white overflow-hidden p-0 min-h-[400px] relative">
+            <div className="flex-1 bg-transparent overflow-hidden p-0 min-h-[400px] relative">
                 <AnimatePresence mode="wait">
                     {activeTab === 'flowchart' && (
                         <motion.div
@@ -184,7 +179,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
                             <textarea
                                 value={results.algorithm}
                                 onChange={(e) => handleUpdate('algorithm', e.target.value)}
-                                className="flex-1 w-full h-full p-6 resize-none focus:outline-none text-gray-800 font-mono text-sm leading-relaxed bg-white"
+                                className="flex-1 w-full h-full p-6 resize-none focus:outline-none text-gray-300 font-mono text-sm leading-relaxed bg-transparent"
                                 placeholder="Algorithm steps..."
                                 spellCheck={false}
                             />
@@ -204,7 +199,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
                             <textarea
                                 value={results.pseudoCode}
                                 onChange={(e) => handleUpdate('pseudoCode', e.target.value)}
-                                className="flex-1 w-full h-full p-6 resize-none focus:outline-none text-gray-800 font-mono text-sm leading-relaxed bg-white"
+                                className="flex-1 w-full h-full p-6 resize-none focus:outline-none text-gray-300 font-mono text-sm leading-relaxed bg-transparent"
                                 placeholder="Pseudo-code..."
                                 spellCheck={false}
                             />
@@ -213,8 +208,8 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ results, onUpdate 
                 </AnimatePresence>
             </div>
 
-            <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                <p className="text-[10px] text-center text-gray-400 font-medium uppercase tracking-wider">
+            <div className="px-4 py-2 bg-white/5 border-t border-white/10">
+                <p className="text-[10px] text-center text-gray-500 font-medium uppercase tracking-wider">
                     Disclaimer: AI-generated results may contain errors. Please review for accuracy.
                 </p>
             </div>
